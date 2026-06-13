@@ -4,7 +4,9 @@ let socket: Socket | null = null
 
 export const initSocket = (authToken?: string): Socket => {
   if (!socket) {
-    socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:5000', {
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL ||
+      (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5000')
+    socket = io(socketUrl, {
       auth: authToken ? { token: authToken } : {},
       transports: ['websocket', 'polling'],
       reconnection: true,
