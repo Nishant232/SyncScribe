@@ -25,7 +25,5 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # Replace 'inderjeet' below with your Hugging Face username
-          # Replace 'SyncScribe' below with your Space name (must match what you created)
-          git remote add hf https://inderjeet:${HF_TOKEN}@huggingface.co/spaces/inderjeet/SyncScribe
+          git remote add hf https://nishant00:${HF_TOKEN}@huggingface.co/spaces/nishant00/SyncScribe
           git push hf main --force
