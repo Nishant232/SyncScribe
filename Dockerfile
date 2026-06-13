@@ -5,7 +5,7 @@ WORKDIR /build
 COPY frontend/package*.json ./
 RUN npm ci
 
-# These are injected from HF Spaces secrets at build time
+# Injected from HF Spaces secrets at build time
 ARG NEXT_PUBLIC_SUPABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
@@ -30,19 +30,23 @@ FROM node:20-alpine
 RUN apk add --no-cache nginx supervisor
 
 # Frontend — Next.js standalone bundle
-COPY --from=frontend-builder /build/.next/standalone /app/frontend
-COPY --from=frontend-builder /build/.next/static     /app/frontend/.next/static
-COPY --from=frontend-builder /build/public           /app/frontend/public
+COPY --from=frontend-builder /build/.next/standalone  /app/frontend
+COPY --from=frontend-builder /build/.next/static      /app/frontend/.next/static
 
-# Backend — compiled JS + production dependencies
+# Copy public folder only if it exists (use a wildcard to avoid failure on empty dir)
+COPY --from=frontend-builder /build/public/           /app/frontend/public/
+
+# Backend — compiled JS
+COPY --from=backend-builder /build/dist /app/backend/dist
+
+# Install backend production dependencies
 WORKDIR /app/backend
-COPY --from=backend-builder /build/dist ./dist
 COPY backend/package*.json ./
 RUN npm ci --omit=dev
 
 # Config files
-COPY nginx.conf        /etc/nginx/nginx.conf
-COPY supervisord.conf  /etc/supervisord.conf
+COPY nginx.conf       /etc/nginx/nginx.conf
+COPY supervisord.conf /etc/supervisord.conf
 
 WORKDIR /app
 
