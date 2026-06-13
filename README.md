@@ -1,3 +1,12 @@
+---
+title: SyncScribe
+emoji: 📝
+colorFrom: purple
+colorTo: blue
+sdk: docker
+pinned: false
+---
+
 <div align="center">
 
 <br />
